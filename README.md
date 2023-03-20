@@ -2,6 +2,8 @@
 
 BigQuery SQL generator from natural language.
 
+https://github.com/algas/bigquery-generator-ai
+
 ChatGPT user registration is required to use it.
 You will also need to configure your environment and download user credentials to run queries in BigQuery.
 
@@ -9,9 +11,9 @@ You will also need to configure your environment and download user credentials t
 
 1. Sign up for ChatGPT  
 https://platform.openai.com/signup
-1. Create a API Key of OpenAI  
+1. Create a API Key of OpenAI (do not forget it)  
 https://platform.openai.com/account/api-keys
-1. Set up Google Cloud Credentials  
+1. Set up Google Cloud Credentials (save to `./google_credential.json`)  
 https://cloud.google.com/docs/authentication/provide-credentials-adc
 1. Set up BigQuery  
 https://cloud.google.com/bigquery/docs/quickstarts/query-public-dataset-console
@@ -29,8 +31,6 @@ docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
 ```
 
 ### Example
-
-Example 
 
 ```sh
 docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
