@@ -1,6 +1,7 @@
 # bigquery-generator-ai
 
 A tool to create a BigQuery SQL using natural language in ChatGPT.
+Just write the table name and what you want to achieve with the query, and SQL will be generated.
 
 https://github.com/algas/bigquery-generator-ai
 
