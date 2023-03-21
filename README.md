@@ -78,9 +78,14 @@ If you want to run your code in your own python environment without docker, the 
 1. Install dependencies  
 `pip install -r requirements.txt`
 1. Run a script
-`python bq_sql_gen.py (instruction) (table_name)`
+```sh
+python bq_sql_gen.py \
+'Retrieve the names of customers who purchased products in March 2018.' \
+'dbt-tutorial.jaffle_shop.customers' \
+'dbt-tutorial.jaffle_shop.orders'
+```
 
 ## Note
 
-- Adding `-v(--verbose)` at the end of the command will also output the contents of the prompt.
+- Adding `-v` or `--verbose` at the end of the command will also output the contents of the prompt.
 - It may not output correct SQL if complex instructions or statements unrelated to the query are given.
