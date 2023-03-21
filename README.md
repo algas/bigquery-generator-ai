@@ -60,28 +60,6 @@ docker run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY \
 
 ### Example Result
 
-> Entering new LLMChain chain...
-Prompt after formatting:
-
-Write a BigQuery SQL that achieves the following.
-```
-Retrieve the names of customers who purchased products in March 2018.
-```
-
-The format of the target tables is as follows.
-```json
-[{"project": "dbt-tutorial", "dataset": "jaffle_shop", "table": "customers", "schema": [{"name": "ID", "type": "INTEGER", "mode": "NULLABLE"}, {"name": "FIRST_NAME", "type": "STRING", "mode": "NULLABLE"}, {"name": "LAST_NAME", "type": "STRING", "mode": "NULLABLE"}]}, {"project": "dbt-tutorial", "dataset": "jaffle_shop", "table": "orders", "schema": [{"name": "ID", "type": "INTEGER", "mode": "NULLABLE"}, {"name": "USER_ID", "type": "INTEGER", "mode": "NULLABLE"}, {"name": "ORDER_DATE", "type": "DATE", "mode": "NULLABLE"}, {"name": "STATUS", "type": "STRING", "mode": "NULLABLE"}, {"name": "_etl_loaded_at", "type": "DATETIME", "mode": "NULLABLE"}]}]
-```
-
-Example:
-```sql
-SELECT * FROM `project.dataset.table`;
-```
-    
-
-> Finished chain.
-
-Answer:
 ```sql
 SELECT c.FIRST_NAME, c.LAST_NAME 
 FROM `dbt-tutorial.jaffle_shop.customers` c 
@@ -101,3 +79,8 @@ If you want to run your code in your own python environment without docker, the 
 `pip install -r requirements.txt`
 1. Run a script
 `python bq_sql_gen.py (instruction) (table_name)`
+
+## Note
+
+- Adding `-v(--verbose)` at the end of the command will also output the contents of the prompt.
+- It may not output correct SQL if complex instructions or statements unrelated to the query are given.
