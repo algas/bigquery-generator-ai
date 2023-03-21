@@ -7,25 +7,39 @@ It refers to the table schema instead of the data in the table to understand the
 https://github.com/algas/bigquery-generator-ai
 
 ChatGPT user registration is required to use it.
-You will also need to configure your environment and download user credentials to run queries in BigQuery.
+You will also need to configure your environment and download user credentials to get the table schema in BigQuery.
 
 ## Setup
+
+### ChatGPT API
 
 1. Sign up for ChatGPT  
 https://platform.openai.com/signup
 1. Create a API Key of OpenAI (do not forget it)  
 https://platform.openai.com/account/api-keys
-1. Set up Google Cloud Credentials (save to `./google_credential.json`)  
-https://cloud.google.com/docs/authentication/provide-credentials-adc
+1. Set your API key to the enviromnent variable  
+`export OPENAI_API_KEY=xxxxxx`
+
+### Google Cloud
+
 1. Set up BigQuery  
 https://cloud.google.com/bigquery/docs/quickstarts/query-public-dataset-console
+1. Create a service account  
+https://cloud.google.com/iam/docs/service-accounts-create
+1. Apply "BigQuery Metadata Viewer" (roles/bigquery.metadataViewer) role to the service account  
+https://cloud.google.com/bigquery/docs/access-control#bigquery.metadataViewer  
+https://cloud.google.com/iam/docs/manage-access-service-accounts#grant-single-role
+1. Create a service account key (and save to `./credential.json`)  
+https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console
+1. Set the path to the credential file to the enviromnent variable  
+`export GOOGLE_APPLICATION_CREDENTIALS=$PWD/credential.json`
 
 ## Usage
 
 ```sh
-docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
--e GOOGLE_APPLICATION_CREDENTIALS=/app/google_credential.json \
--v /path/to/credential:/app/google_credential.json \
+docker run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY \
+-e GOOGLE_APPLICATION_CREDENTIALS=/app/credential.json \
+-v $GOOGLE_APPLICATION_CREDENTIALS:/app/credential.json \
 -it algas/bigquery-generator-ai:latest \
 'Instruction' \
 'Bigquery Table' \
@@ -35,9 +49,9 @@ docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
 ### Example
 
 ```sh
-docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
--e GOOGLE_APPLICATION_CREDENTIALS=/app/google_credential.json \
--v $(PWD)/google_credential.json:/app/google_credential.json \
+docker run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY \
+-e GOOGLE_APPLICATION_CREDENTIALS=/app/credential.json \
+-v $GOOGLE_APPLICATION_CREDENTIALS:/app/credential.json \
 -it algas/bigquery-generator-ai:latest \
 'Retrieve the names of customers who purchased products in March 2018.' \
 'dbt-tutorial.jaffle_shop.customers' \
