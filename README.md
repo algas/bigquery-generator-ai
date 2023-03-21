@@ -90,3 +90,14 @@ ON c.ID = o.USER_ID
 WHERE EXTRACT(MONTH FROM o.ORDER_DATE) = 3 
 AND EXTRACT(YEAR FROM o.ORDER_DATE) = 2018;
 ```
+
+## Build
+
+If you want to run your code in your own python environment without docker, the following steps are required.
+
+1. Clone the git reposigory  
+`git clone https://github.com/algas/bigquery-generator-ai.git`
+1. Install dependencies  
+`pip install -r requirements.txt`
+1. Run a script
+`python bq_sql_gen.py (instruction) (table_name)`
