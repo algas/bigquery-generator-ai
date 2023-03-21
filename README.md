@@ -7,25 +7,39 @@ It refers to the table schema instead of the data in the table to understand the
 https://github.com/algas/bigquery-generator-ai
 
 ChatGPT user registration is required to use it.
-You will also need to configure your environment and download user credentials to run queries in BigQuery.
+You will also need to configure your environment and download user credentials to get the table schema in BigQuery.
 
 ## Setup
+
+### ChatGPT API
 
 1. Sign up for ChatGPT  
 https://platform.openai.com/signup
 1. Create a API Key of OpenAI (do not forget it)  
 https://platform.openai.com/account/api-keys
-1. Set up Google Cloud Credentials (save to `./google_credential.json`)  
-https://cloud.google.com/docs/authentication/provide-credentials-adc
+1. Set your API key to the enviromnent variable  
+`export OPENAI_API_KEY=xxxxxx`
+
+### Google Cloud
+
 1. Set up BigQuery  
 https://cloud.google.com/bigquery/docs/quickstarts/query-public-dataset-console
+1. Create a service account  
+https://cloud.google.com/iam/docs/service-accounts-create
+1. Apply "BigQuery Metadata Viewer" (roles/bigquery.metadataViewer) role to the service account  
+https://cloud.google.com/bigquery/docs/access-control#bigquery.metadataViewer  
+https://cloud.google.com/iam/docs/manage-access-service-accounts#grant-single-role
+1. Create a service account key (and save to `./credential.json`)  
+https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console
+1. Set the path to the credential file to the enviromnent variable  
+`export GOOGLE_APPLICATION_CREDENTIALS=$PWD/credential.json`
 
 ## Usage
 
 ```sh
-docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
--e GOOGLE_APPLICATION_CREDENTIALS=/app/google_credential.json \
--v /path/to/credential:/app/google_credential.json \
+docker run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY \
+-e GOOGLE_APPLICATION_CREDENTIALS=/app/credential.json \
+-v $GOOGLE_APPLICATION_CREDENTIALS:/app/credential.json \
 -it algas/bigquery-generator-ai:latest \
 'Instruction' \
 'Bigquery Table' \
@@ -35,9 +49,9 @@ docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
 ### Example
 
 ```sh
-docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
--e GOOGLE_APPLICATION_CREDENTIALS=/app/google_credential.json \
--v $(PWD)/google_credential.json:/app/google_credential.json \
+docker run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY \
+-e GOOGLE_APPLICATION_CREDENTIALS=/app/credential.json \
+-v $GOOGLE_APPLICATION_CREDENTIALS:/app/credential.json \
 -it algas/bigquery-generator-ai:latest \
 'Retrieve the names of customers who purchased products in March 2018.' \
 'dbt-tutorial.jaffle_shop.customers' \
@@ -46,28 +60,6 @@ docker run --rm -e OPENAI_API_KEY=_YOUR_API_KEY_ \
 
 ### Example Result
 
-> Entering new LLMChain chain...
-Prompt after formatting:
-
-Write a BigQuery SQL that achieves the following.
-```
-Retrieve the names of customers who purchased products in March 2018.
-```
-
-The format of the target tables is as follows.
-```json
-[{"project": "dbt-tutorial", "dataset": "jaffle_shop", "table": "customers", "schema": [{"name": "ID", "type": "INTEGER", "mode": "NULLABLE"}, {"name": "FIRST_NAME", "type": "STRING", "mode": "NULLABLE"}, {"name": "LAST_NAME", "type": "STRING", "mode": "NULLABLE"}]}, {"project": "dbt-tutorial", "dataset": "jaffle_shop", "table": "orders", "schema": [{"name": "ID", "type": "INTEGER", "mode": "NULLABLE"}, {"name": "USER_ID", "type": "INTEGER", "mode": "NULLABLE"}, {"name": "ORDER_DATE", "type": "DATE", "mode": "NULLABLE"}, {"name": "STATUS", "type": "STRING", "mode": "NULLABLE"}, {"name": "_etl_loaded_at", "type": "DATETIME", "mode": "NULLABLE"}]}]
-```
-
-Example:
-```sql
-SELECT * FROM `project.dataset.table`;
-```
-    
-
-> Finished chain.
-
-Answer:
 ```sql
 SELECT c.FIRST_NAME, c.LAST_NAME 
 FROM `dbt-tutorial.jaffle_shop.customers` c 
@@ -76,3 +68,19 @@ ON c.ID = o.USER_ID
 WHERE EXTRACT(MONTH FROM o.ORDER_DATE) = 3 
 AND EXTRACT(YEAR FROM o.ORDER_DATE) = 2018;
 ```
+
+## Build
+
+If you want to run your code in your own python environment without docker, the following steps are required.
+
+1. Clone the git reposigory  
+`git clone https://github.com/algas/bigquery-generator-ai.git`
+1. Install dependencies  
+`pip install -r requirements.txt`
+1. Run a script
+`python bq_sql_gen.py (instruction) (table_name)`
+
+## Note
+
+- Adding `-v(--verbose)` at the end of the command will also output the contents of the prompt.
+- It may not output correct SQL if complex instructions or statements unrelated to the query are given.
